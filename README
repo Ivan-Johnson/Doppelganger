@@ -1,0 +1,6 @@
+Jormungandr
+
+Jormungandr is a project for managing a command queue that was inspired by Task
+Spooler[1].
+
+[1]: http://viric.name/soft/ts/

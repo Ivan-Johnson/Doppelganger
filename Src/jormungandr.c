@@ -14,8 +14,10 @@
 
 #include "jormungandr.h"
 
+#ifndef TEST
 int main()
 {
 	puts("Hello, World!");
 	return 0;
 }
+#endif

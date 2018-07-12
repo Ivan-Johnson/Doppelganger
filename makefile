@@ -113,7 +113,7 @@ TEST_SOURCES = $(wildcard $(SRC_TEST_DIR)/*.c)
 TEST_OBJECTS = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(BIN_TEST_DIR)/%.o)
 TEST_DEPENDS = $(BIN_TEST_DIR)/.depends
 
-#.PHONY:test
+.PHONY:test
 test: $(BIN_TEST_DIR)/$(TEST_RUNNER)
 #symlink the built executable to $(BIN_DIR_BASE)/ for convinience
 	ln -sf $(BIN_TEST_DIR:$(BIN_DIR_BASE)/%=%)/$(TEST_RUNNER) $(BIN_DIR_BASE)/

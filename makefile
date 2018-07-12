@@ -68,11 +68,7 @@ endif
 SOURCES=$(wildcard $(SRC_DIR)/*.c)
 HEADERS=$(wildcard $(SRC_DIR)/*.h)
 OBJECTS=$(SOURCES:$(SRC_DIR)/%.c=$(BIN_DIR)/%.o)
-ifeq ($(ISTEST),1)
-BIN_DIR  = $(BIN_DIR_BASE)/$(OPTIMIZED)/$(STRICT)/Test
-else
-BIN_DIR  = $(BIN_DIR_BASE)/$(OPTIMIZED)/$(STRICT)
-endif
+BIN_DIR  = $(BIN_DIR_BASE)/$(ISTEST)/$(OPTIMIZED)/$(STRICT)
 DEPENDS=$(BIN_DIR)/.depends
 
 .PHONY: all

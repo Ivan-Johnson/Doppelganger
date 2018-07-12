@@ -54,11 +54,11 @@ else
 endif
 
 ifeq ($(MAKECMDGOALS),test)
-ISTEST = 1
-CFLAGS += -D TEST
-LDLIBS += -lunity
+	ISTEST = 1
+	CFLAGS += -D TEST
+	LDLIBS += -lunity
 else
-ISTEST = 0
+	ISTEST = 0
 endif
 
 ###########

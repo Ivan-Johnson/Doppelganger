@@ -12,6 +12,14 @@ SRC_DIR = Src
 SRC_TEST_DIR = Test
 BIN_DIR_BASE = Bin
 
+#the generate_test_runner.rb script from Unity
+#if it's not in $PATH, then this variable can be changed to an absolute path.
+SUMMARY_SCRIPT = Scripts/sumarize.bash
+GENERATE_RUNNER = generate_test_runner.rb
+
+
+.DELETE_ON_ERROR:
+
 ##############
 #CC ARGUMENTS#
 ##############
@@ -101,10 +109,7 @@ $(BIN_DIR):
 SOURCE_TESTRUNNER_DIR = $(BIN_DIR_BASE)/TestRunners
 BIN_TESTRUNNER_DIR    = $(BIN_DIR)/TestRunners
 BIN_TEST_DIR          = $(BIN_DIR)/TestCases
-
-#the generate_test_runner.rb script from Unity
-#if it's not in $PATH, then this variable can be changed to an absolute path.
-generate_runner = generate_test_runner.rb
+OUT_TEST_DIR          = $(BIN_DIR)/TestOut
 
 
 #1: we're given these test case files
@@ -115,19 +120,32 @@ TEST_SOURCES_RUNNER = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(SOURCE_TESTRUNNER_DIR
 TEST_OBJECTS        = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(BIN_TESTRUNNER_DIR)/%_runner.o)
 #4: which are in turn linked into executables
 TEST_RUNNERS        = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(BIN_TESTRUNNER_DIR)/%_runner)
+#5: whose output is collected
+TEST_OUT_FILES      = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(OUT_TEST_DIR)/%.out)
+#6: and sumarized
+TEST_SUMMARY_FILE   = $(OUT_TEST_DIR)/summary.txt
+
 
 
 TESTRUNNER_DEPENDS  = $(BIN_TESTRUNNER_DIR)/.depends
 TESTCASE_DEPENDS    = $(BIN_TEST_DIR)/.depends
 
 .PHONY:test
-test: $(TEST_RUNNERS)
+test: $(TEST_SUMMARY_FILE) $(TEST_OUT_FILES) $(TEST_RUNNERS)
 #TODO: actually run the tests and cleanly report the results
 #create links in $(BIN_DIR_BASE), one to each test
-	for x in $^; do                                                           \
-		ln -sf $${x/"$(BIN_DIR_BASE)/"} $(BIN_DIR_BASE)/$$(basename $$x); \
+	for x in $^; do                                                          \
+		ln -sf $${x/"$(BIN_DIR_BASE)/"} $(BIN_DIR_BASE)/$$(basename $$x);\
 	done
+	@echo; echo; echo
+	@cat $(TEST_SUMMARY_FILE)
 
+$(TEST_SUMMARY_FILE): $(TEST_OUT_FILES)
+	$(SUMMARY_SCRIPT) $^ > $@
+
+
+$(OUT_TEST_DIR)/%.out: $(BIN_TESTRUNNER_DIR)/%_runner | $(OUT_TEST_DIR)
+	$< > $@ || true
 
 #TODO: only link with the objects that it actually needs
 .PRECIOUS: $(TEST_RUNNERS)
@@ -136,11 +154,9 @@ $(BIN_TESTRUNNER_DIR)/%_runner: $(OBJECTS) $(BIN_TESTRUNNER_DIR)/%_runner.o $(BI
 
 $(BIN_TEST_DIR)/%.o: | $(BIN_TEST_DIR)
 
-#TODO: verify that the depends file correctly declares the dependencies
 $(BIN_TESTRUNNER_DIR)/%_runner.o: | $(BIN_TESTRUNNER_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-#70% sure this thing is right
 $(TESTRUNNER_DEPENDS): $(TEST_SOURCES_RUNNER) | $(BIN_TESTRUNNER_DIR)
 	$(CC) $(CFLAGS) -MM $^ | sed -e 's!^!$(BIN_TESTRUNNER_DIR)/!' >$@
 $(TESTCASE_DEPENDS): $(TEST_SOURCES) | $(BIN_TEST_DIR)
@@ -153,7 +169,10 @@ endif
 
 .PRECIOUS: $(TEST_SOURCES_RUNNER)
 $(SOURCE_TESTRUNNER_DIR)/%_runner.c: $(SRC_TEST_DIR)/%.c | $(SOURCE_TESTRUNNER_DIR)
-	$(generate_runner) $< $@
+	$(GENERATE_RUNNER) $< $@
+
+$(OUT_TEST_DIR):
+	mkdir -p $@
 
 $(BIN_TESTRUNNER_DIR):
 	mkdir -p $@

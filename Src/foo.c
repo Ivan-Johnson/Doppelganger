@@ -17,6 +17,5 @@ int getZero()
 
 int getOne()
 {
-	//bug here for testing purposes
-	return 0;
+	return 1;
 }

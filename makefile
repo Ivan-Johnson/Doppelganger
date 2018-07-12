@@ -6,12 +6,12 @@
 #
 #LICENSE: GPL 2.0 only
 
-APP=jormungandr
-TEST_RUNNER=testRunner
+APP = jormungandr
+TEST_RUNNER = testRunner
 
-SRC_DIR=Src
-SRC_TEST_DIR=Test
-BIN_DIR_BASE=Bin
+SRC_DIR = Src
+SRC_TEST_DIR = Test
+BIN_DIR_BASE = Bin
 
 ##############
 #CC ARGUMENTS#
@@ -65,11 +65,11 @@ endif
 #BUILD APP#
 ###########
 
-SOURCES=$(wildcard $(SRC_DIR)/*.c)
-HEADERS=$(wildcard $(SRC_DIR)/*.h)
-OBJECTS=$(SOURCES:$(SRC_DIR)/%.c=$(BIN_DIR)/%.o)
-BIN_DIR  = $(BIN_DIR_BASE)/$(ISTEST)/$(OPTIMIZED)/$(STRICT)
-DEPENDS=$(BIN_DIR)/.depends
+SOURCES = $(wildcard $(SRC_DIR)/*.c)
+HEADERS = $(wildcard $(SRC_DIR)/*.h)
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(BIN_DIR)/%.o)
+BIN_DIR = $(BIN_DIR_BASE)/$(ISTEST)/$(OPTIMIZED)/$(STRICT)
+DEPENDS = $(BIN_DIR)/.depends
 
 .PHONY: all
 all: $(BIN_DIR)/$(APP)
@@ -108,10 +108,10 @@ $(BIN_DIR):
 #BUILD TESTS#
 #############
 
-BIN_TEST_DIR=$(BIN_DIR)/Test
-TEST_SOURCES=$(wildcard $(SRC_TEST_DIR)/*.c)
-TEST_OBJECTS=$(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(BIN_TEST_DIR)/%.o)
-TEST_DEPENDS=$(BIN_TEST_DIR)/.depends
+BIN_TEST_DIR = $(BIN_DIR)/Test
+TEST_SOURCES = $(wildcard $(SRC_TEST_DIR)/*.c)
+TEST_OBJECTS = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(BIN_TEST_DIR)/%.o)
+TEST_DEPENDS = $(BIN_TEST_DIR)/.depends
 
 #.PHONY:test
 test: $(BIN_TEST_DIR)/$(TEST_RUNNER)

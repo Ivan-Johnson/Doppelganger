@@ -8,6 +8,9 @@
  * LICENSE: GPL 2.0 only
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "foo.h"
 
 int getZero()
@@ -19,3 +22,11 @@ int getOne()
 {
 	return 1;
 }
+
+#ifndef TEST
+int main()
+{
+	puts("Hello, World!");
+	return 0;
+}
+#endif

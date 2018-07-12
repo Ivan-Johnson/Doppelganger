@@ -6,7 +6,7 @@
 #
 #LICENSE: GPL 2.0 only
 
-APP = jormungandr
+APP = foo
 
 SRC_DIR = Src
 SRC_TEST_DIR = Test

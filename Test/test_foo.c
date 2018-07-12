@@ -1,5 +1,5 @@
 /*
- * Test/foo.c
+ * Test/test_foo.c
  *
  * A simple file for testing Src/foo.c
  *

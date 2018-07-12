@@ -124,8 +124,8 @@ TESTCASE_DEPENDS    = $(BIN_TEST_DIR)/.depends
 test: $(TEST_RUNNERS)
 #TODO: actually run the tests and cleanly report the results
 #create links in $(BIN_DIR_BASE), one to each test
-	for x in $^; do                                                           \
-		ln -sf $${x/"$(BIN_DIR_BASE)/"} $(BIN_DIR_BASE)/$$(basename $$x); \
+	for x in $^; do                                                          \
+		ln -sf $${x/"$(BIN_DIR_BASE)/"} $(BIN_DIR_BASE)/$$(basename $$x);\
 	done
 
 
@@ -136,11 +136,9 @@ $(BIN_TESTRUNNER_DIR)/%_runner: $(OBJECTS) $(BIN_TESTRUNNER_DIR)/%_runner.o $(BI
 
 $(BIN_TEST_DIR)/%.o: | $(BIN_TEST_DIR)
 
-#TODO: verify that the depends file correctly declares the dependencies
 $(BIN_TESTRUNNER_DIR)/%_runner.o: | $(BIN_TESTRUNNER_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-#70% sure this thing is right
 $(TESTRUNNER_DEPENDS): $(TEST_SOURCES_RUNNER) | $(BIN_TESTRUNNER_DIR)
 	$(CC) $(CFLAGS) -MM $^ | sed -e 's!^!$(BIN_TESTRUNNER_DIR)/!' >$@
 $(TESTCASE_DEPENDS): $(TEST_SOURCES) | $(BIN_TEST_DIR)

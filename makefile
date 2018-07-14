@@ -137,10 +137,10 @@ test: $(TEST_SUMMARY_FILE) $(TEST_OUT_FILES) $(TEST_RUNNERS)
 	done
 	@cat $(TEST_SUMMARY_FILE)
 
-$(TEST_SUMMARY_FILE): $(TEST_OUT_FILES)
+$(TEST_SUMMARY_FILE): $(SUMMARY_SCRIPT) $(TEST_OUT_FILES)
 #If there are no failures, then exit   successfully and silently.
 #If there ARE    failures, then exit UNsuccessfully and show the summary file
-	$(SUMMARY_SCRIPT) $^ > $@ || { cat $@; false; }
+	$(SUMMARY_SCRIPT) $(TEST_OUT_FILES) > $@ || { cat $@; false; }
 
 $(OUT_TEST_DIR)/%.out: $(BIN_TESTRUNNER_DIR)/%_runner | $(OUT_TEST_DIR)
 	$< > $@ || true

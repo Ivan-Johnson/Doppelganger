@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
+	echo "CHECKING TESTS BEFORE COMMITING TO MASTER"
+	make test || exit $?
+fi

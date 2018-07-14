@@ -132,8 +132,6 @@ TESTCASE_DEPENDS    = $(BIN_TEST_DIR)/.depends
 
 .PHONY:test
 test: $(TEST_SUMMARY_FILE) $(TEST_OUT_FILES) $(TEST_RUNNERS)
-#TODO: actually run the tests and cleanly report the results
-#create links in $(BIN_DIR_BASE), one to each test
 	for x in $^; do                                                          \
 		ln -sf $${x/"$(BIN_DIR_BASE)/"} $(BIN_DIR_BASE)/$$(basename $$x);\
 	done

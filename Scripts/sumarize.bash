@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#Scripts/sumarize.bash
+#
+#Summarize the results of Unity tests
+#
+#Copyright(C) 2018, Ivan Tobias Johnson
+#
+#LICENSE: MIT License
+
+
+
 TMPFILE="$(mktemp)"
 
 file_fail_count=0

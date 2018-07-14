@@ -42,16 +42,22 @@ for x in $* ; do
 		((file_ignore_count++))
 	fi
 done
+
+cat << EOF
+#########################
+#SUMMARIZED TEST RESULTS#
+#########################
+
+EOF
+
 echo "TOTAL|$total_fails|$total_ignores|$total_tests" >> "$TMPFILE"
 column --table --table-columns "GROUP NAME,FAILURES,IGNORED,TEST COUNT" --separator '|' --output-separator ' │ ' "$TMPFILE"
 rm "$TMPFILE"
 
-printf '\n\n'
-
-echo "SUMMARY:"
-echo "$file_fail_count groups had at least one failure"
-echo "$file_ignore_count passed with one or more ignored test cases"
-echo "$file_count groups in total"
+echo "
+$file_fail_count groups had at least one failure
+$file_ignore_count passed with one or more ignored test cases
+$file_count groups in total"
 
 [ "$total_fails" -eq 0 ]
 exit $?

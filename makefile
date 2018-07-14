@@ -132,10 +132,9 @@ TESTCASE_DEPENDS    = $(BIN_TEST_DIR)/.depends
 
 .PHONY:test
 test: $(TEST_SUMMARY_FILE) $(TEST_OUT_FILES) $(TEST_RUNNERS)
-	for x in $^; do                                                          \
+	@for x in $^; do                                                          \
 		ln -sf $${x/"$(BIN_DIR_BASE)/"} $(BIN_DIR_BASE)/$$(basename $$x);\
 	done
-	@echo; echo; echo
 	@cat $(TEST_SUMMARY_FILE)
 
 $(TEST_SUMMARY_FILE): $(TEST_OUT_FILES)

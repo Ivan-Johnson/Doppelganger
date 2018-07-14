@@ -1,6 +1,5 @@
-Jormungandr
+Doppelgänger
 
-Jormungandr is a project for managing a command queue that was inspired by Task
-Spooler[1].
-
-[1]: http://viric.name/soft/ts/
+Doppelgänger (a.k.a. Doppelganger) is C repository with a complete build and
+test system, but essentially no actual code. Doppelgänger's sole purpose is to
+serve as a starting point for other projects.

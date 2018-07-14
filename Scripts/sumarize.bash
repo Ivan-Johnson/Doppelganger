@@ -52,3 +52,6 @@ echo "SUMMARY:"
 echo "$file_fail_count groups had at least one failure"
 echo "$file_ignore_count passed with one or more ignored test cases"
 echo "$file_count groups in total"
+
+[ "$total_fails" -eq 0 ]
+exit $?

@@ -28,44 +28,28 @@ GENERATE_RUNNER = generate_test_runner.rb
 #CC = x86_64-w64-mingw32-gcc
 
 CFLAGS += -I$(SRC_DIR)
-CFLAGS += -Wfatal-errors -std=c99
+CFLAGS += -Wfatal-errors -std=c99 -Werror -Wconversion -Wall -Wextra -pedantic -pedantic-errors
 
 
-#Controls how strict the compiler is. Zero is the most strict, larger values are
-#more lenient. This value can be modified here, or make can be run as follows:
-#
-#make <target> STRICT=<value>
-STRICT ?= 0
 
-ifeq ($(shell test $(STRICT) -le 2; echo $$?),0)
-	CFLAGS += -Werror
+BUILD_TYPE ?= develop
+ifeq ($(BUILD_TYPE), debug)
+	CFLAGS += -D DEBUG -O0 -ggdb -fno-inline -fsanitize=address -fsanitize=leak -fsanitize=undefined
+	LDLIBS += -lasan -lubsan
 endif
-
-ifeq ($(shell test $(STRICT) -le 1; echo $$?),0)
-	CFLAGS += -Wconversion
+ifeq ($(BUILD_TYPE), develop)
+	CFLAGS += -D DEVELOP -O0 -ggdb -fno-inline
 endif
-
-ifeq ($(shell test $(STRICT) -eq 0; echo $$?),0)
-#-fsanitize=address
-	CFLAGS += -Wall -Wextra
-endif
-
-
-OPTS_DEBUG = -D DEBUG -O0 -ggdb -fno-inline
-OPTS_OPTIMIZED = -O3
-OPTIMIZED ?= 0
-ifeq ($(shell test $(OPTIMIZED) -eq 0; echo $$?),0)
-	CFLAGS += $(OPTS_DEBUG)
-else
-	CFLAGS += $(OPTS_OPTIMIZED)
+ifeq ($(BUILD_TYPE), release)
+	CFLAGS += -D RELEASE -O3
 endif
 
 ifeq ($(MAKECMDGOALS),test)
-	ISTEST = 1
+	BIN_DIR = $(BIN_DIR_BASE)/$(BUILD_TYPE)/Test
 	CFLAGS += -D TEST
 	LDLIBS += -lunity
 else
-	ISTEST = 0
+	BIN_DIR = $(BIN_DIR_BASE)/$(BUILD_TYPE)/Nontest
 endif
 
 ###########
@@ -75,13 +59,10 @@ endif
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 HEADERS = $(wildcard $(SRC_DIR)/*.h)
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(BIN_DIR)/%.o)
-BIN_DIR = $(BIN_DIR_BASE)/$(ISTEST)/$(OPTIMIZED)/$(STRICT)
 DEPENDS = $(BIN_DIR)/.depends
 
 .PHONY: all
 all: $(BIN_DIR)/$(APP)
-#symlink the built executable to $(BIN_DIR_BASE)/ for convinience
-	ln -sf $(BIN_DIR:$(BIN_DIR_BASE)/%=%)/$(APP) $(BIN_DIR_BASE)/
 
 $(BIN_DIR)/$(APP): $(OBJECTS) | $(BIN_DIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LOADLIBES) $(LDLIBS)
@@ -132,9 +113,6 @@ TESTCASE_DEPENDS    = $(BIN_TEST_DIR)/.depends
 
 .PHONY:test
 test: $(TEST_SUMMARY_FILE) $(TEST_OUT_FILES) $(TEST_RUNNERS)
-	@for x in $^; do                                                          \
-		ln -sf $${x/"$(BIN_DIR_BASE)/"} $(BIN_DIR_BASE)/$$(basename $$x);\
-	done
 	@cat $(TEST_SUMMARY_FILE)
 
 $(TEST_SUMMARY_FILE): $(SUMMARY_SCRIPT) $(TEST_OUT_FILES)

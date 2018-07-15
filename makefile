@@ -118,6 +118,10 @@ TEST_OUT_FILES      = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(OUT_TEST_DIR)/%.out)
 TEST_SUMMARY_FILE   = $(OUT_TEST_DIR)/summary.txt
 
 
+BISECT_NAME=$(shell basename --suffix=".c" "$(BISECT_TEST_TEMPLATE)")
+BISECT_TEST_SRC=$(SRC_TEST_DIR)/$(BISECT_NAME).c
+BISECT_BINARY=$(BIN_TESTRUNNER_DIR)/$(BISECT_NAME)_runner
+
 
 TESTRUNNER_DEPENDS  = $(BIN_TESTRUNNER_DIR)/.depends
 TESTCASE_DEPENDS    = $(BIN_TEST_DIR)/.depends
@@ -174,9 +178,6 @@ $(BIN_TEST_DIR):
 ############
 #GIT BISECT#
 ############
-BISECT_NAME=$(shell basename --suffix=".c" "$(BISECT_TEST_TEMPLATE)")
-BISECT_TEST_SRC=$(SRC_TEST_DIR)/$(BISECT_NAME).c
-BISECT_BINARY=$(BIN_TESTRUNNER_DIR)/$(BISECT_NAME)_runner
 $(BISECT_TEST_SRC): $(BISECT_TEST_TEMPLATE)
 	[ ! -e "$@" ]
 	mkdir -p "$$(dirname $(SRC_TEST_DIR))"

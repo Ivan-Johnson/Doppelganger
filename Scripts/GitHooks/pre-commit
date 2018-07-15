@@ -1,6 +1,28 @@
 #!/bin/sh
 
-if [ `git rev-parse --abbrev-ref HEAD` == "master" ]; then
-	echo "CHECKING TESTS BEFORE COMMITING TO MASTER"
-	make test || exit $?
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$branch" == "stable" ]; then
+	echo "In general, you shouldn't commit directly to the stable branch!"
+	if ! make -j all > /dev/null; then
+		echo "To make matters worse, THIS COMMIT DOES NOT EVEN COMPILE!"
+		echo "UNDER NO CIRCUMSTANCES SHOULD YOU COMMIT THIS TO THE STABLE BRANCH!"
+		exit 1
+	fi
+	if ! make -j test > /dev/null; then
+		echo "To make matters worse, this commit does not even pass all tests!"
+	fi
+	echo "(To override this rejection, use \"git commit --no-verify\")"
+	exit 1
+fi
+if [ "$branch" == "develop" ]; then
+	if ! make -j all > /dev/null; then
+		echo "THIS COMMIT DOES NOT COMPILE!"
+		echo "You *REALLY* shouldn't commit this to the develop branch!"
+		exit 1
+	fi
+	if ! make -j test > /dev/null; then
+		echo "This commit does not pass all tests!"
+		echo "Please fix them before committing to the develop branch!"
+		echo "(To override this rejection, use \"git commit --no-verify\")"
+	fi
 fi

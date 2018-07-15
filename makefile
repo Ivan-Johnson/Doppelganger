@@ -44,7 +44,8 @@ ifeq ($(BUILD_TYPE), release)
 	CFLAGS += -D RELEASE -O3
 endif
 
-ifeq ($(MAKECMDGOALS),test)
+IS_TEST ?= $(if $(shell [ "$(MAKECMDGOALS)" = "test" ] && echo asdf),yes,no)
+ifeq ($(IS_TEST), yes)
 	BIN_DIR = $(BIN_DIR_BASE)/$(BUILD_TYPE)/Test
 	CFLAGS += -D TEST
 	LDLIBS += -lunity
@@ -87,6 +88,7 @@ $(BIN_DIR):
 #############
 #BUILD TESTS#
 #############
+ifeq ($(IS_TEST), yes)
 SOURCE_TESTRUNNER_DIR = $(BIN_DIR_BASE)/TestRunners
 BIN_TESTRUNNER_DIR    = $(BIN_DIR)/TestRunners
 BIN_TEST_DIR          = $(BIN_DIR)/TestCases
@@ -138,10 +140,8 @@ $(TESTRUNNER_DEPENDS): $(TEST_SOURCES_RUNNER) | $(BIN_TESTRUNNER_DIR)
 $(TESTCASE_DEPENDS): $(TEST_SOURCES) | $(BIN_TEST_DIR)
 	$(CC) $(CFLAGS) -MM $^ | sed -e 's!^!$(BIN_TEST_DIR)/!' >$@
 
-ifeq ($(MAKECMDGOALS),test)
 -include $(TESTCASE_DEPENDS)
 -include $(TESTRUNNER_DEPENDS)
-endif
 
 .PRECIOUS: $(TEST_SOURCES_RUNNER)
 $(SOURCE_TESTRUNNER_DIR)/%_runner.c: $(SRC_TEST_DIR)/%.c | $(SOURCE_TESTRUNNER_DIR)
@@ -158,6 +158,7 @@ $(SOURCE_TESTRUNNER_DIR):
 
 $(BIN_TEST_DIR):
 	mkdir -p $@
+endif
 
 .PHONY: clean
 clean:

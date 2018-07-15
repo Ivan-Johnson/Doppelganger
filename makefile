@@ -124,6 +124,7 @@ test: $(TEST_SUMMARY_FILE) $(TEST_OUT_FILES) $(TEST_RUNNERS)
 $(TEST_SUMMARY_FILE): $(SUMMARY_SCRIPT) $(TEST_OUT_FILES)
 #If there are no failures, then exit   successfully and silently.
 #If there ARE    failures, then exit UNsuccessfully and show the summary file
+#This is done so that "make test" will show the summary exactly once, regardless of whether or not all tests passed.
 	$(SUMMARY_SCRIPT) $(TEST_OUT_FILES) > $@ || { cat $@; false; }
 
 $(OUT_TEST_DIR)/%.out: $(BIN_TESTRUNNER_DIR)/%_runner | $(OUT_TEST_DIR)

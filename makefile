@@ -179,14 +179,21 @@ $(BIN_TEST_DIR):
 #GIT BISECT#
 ############
 $(BISECT_TEST_SRC): $(BISECT_TEST_TEMPLATE)
-	[ ! -e "$@" ]
-	mkdir -p "$$(dirname $(SRC_TEST_DIR))"
-	cp "$<" "$@"
+	if [ -e "$@" ]; then \
+		mkdir -p "$$(dirname $(SRC_TEST_DIR))"; \
+		cp "$<" "$@"; \
+	else \
+		touch "$@"; \
+	fi
+
 
 .PHONY: bisect
-bisect: $(BISECT_BINARY)
-	echo BIN IS $(BISECT_BINARY)
+bisect_make: $(BISECT_BINARY)
+
+.PHONY: bisect_run
+bisect_run: $(BISECT_BINARY)
 	$(BISECT_BINARY)
+
 
 endif
 

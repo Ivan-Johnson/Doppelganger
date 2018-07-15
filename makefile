@@ -6,14 +6,18 @@
 #
 #LICENSE: MIT License
 
-MAKEFILE_CONFIG=./makefile.config
-MAKEFILE_CONFIG_TEMPLATE=./Templates/makefile.config
 
 APP = foo
 
 SRC_DIR = Src
 SRC_TEST_DIR = Test
 BIN_DIR_BASE = Bin
+
+MAKEFILE_CONFIG = makefile.config
+
+TEMPLATE_DIR = Templates
+MAKEFILE_CONFIG_TEMPLATE=$(TEMPLATE_DIR)/makefile.config
+
 
 #the generate_test_runner.rb script from Unity
 #if it's not in $PATH, then this variable can be changed to an absolute path.

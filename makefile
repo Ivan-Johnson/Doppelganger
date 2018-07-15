@@ -6,6 +6,9 @@
 #
 #LICENSE: MIT License
 
+MAKEFILE_CONFIG=./makefile.config
+MAKEFILE_CONFIG_TEMPLATE=./Templates/makefile.config
+
 APP = foo
 
 SRC_DIR = Src
@@ -16,7 +19,6 @@ BIN_DIR_BASE = Bin
 #if it's not in $PATH, then this variable can be changed to an absolute path.
 SUMMARY_SCRIPT = Scripts/sumarize.bash
 GENERATE_RUNNER = generate_test_runner.rb
-
 
 .DELETE_ON_ERROR:
 
@@ -52,6 +54,8 @@ ifeq ($(IS_TEST), yes)
 else
 	BIN_DIR = $(BIN_DIR_BASE)/$(BUILD_TYPE)/Nontest
 endif
+
+-include $(MAKEFILE_CONFIG)
 
 ###########
 #BUILD APP#
@@ -167,3 +171,12 @@ clean:
 .PHONY: CLEAN
 CLEAN:
 	rm -rf $(BIN_DIR_BASE)
+
+$(MAKEFILE_CONFIG): $(MAKEFILE_CONFIG_TEMPLATE)
+	@if [ -e "$@" ]; then \
+		echo "ERROR: $(MAKEFILE_CONFIG_TEMPLATE) is newer than $(MAKEFILE_CONFIG)"; \
+		echo "Update $(MAKEFILE_CONFIG) to proceed"; \
+		exit 1; \
+	fi
+	configdir=$$(dirname "$@"); mkdir -p "$$configdir"
+	cp "$(MAKEFILE_CONFIG_TEMPLATE)" "$(MAKEFILE_CONFIG)"

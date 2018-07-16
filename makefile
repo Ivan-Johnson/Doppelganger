@@ -16,8 +16,9 @@ BIN_DIR_BASE = Bin
 MAKEFILE_CONFIG = makefile.config
 
 TEMPLATE_DIR = Templates
-MAKEFILE_CONFIG_TEMPLATE=$(TEMPLATE_DIR)/makefile.config
 
+MAKEFILE_CONFIG_TEMPLATE=$(TEMPLATE_DIR)/makefile.config
+BISECT_TEST_TEMPLATE=$(TEMPLATE_DIR)/bisect.c
 
 #the generate_test_runner.rb script from Unity
 #if it's not in $PATH, then this variable can be changed to an absolute path.
@@ -117,6 +118,10 @@ TEST_OUT_FILES      = $(TEST_SOURCES:$(SRC_TEST_DIR)/%.c=$(OUT_TEST_DIR)/%.out)
 TEST_SUMMARY_FILE   = $(OUT_TEST_DIR)/summary.txt
 
 
+BISECT_NAME=$(shell basename --suffix=".c" "$(BISECT_TEST_TEMPLATE)")
+BISECT_TEST_SRC=$(SRC_TEST_DIR)/$(BISECT_NAME).c
+BISECT_BINARY=$(BIN_TESTRUNNER_DIR)/$(BISECT_NAME)_runner
+
 
 TESTRUNNER_DEPENDS  = $(BIN_TESTRUNNER_DIR)/.depends
 TESTCASE_DEPENDS    = $(BIN_TEST_DIR)/.depends
@@ -142,11 +147,13 @@ $(BIN_TESTRUNNER_DIR)/%_runner: $(OBJECTS) $(BIN_TESTRUNNER_DIR)/%_runner.o $(BI
 $(BIN_TEST_DIR)/%.o: | $(BIN_TEST_DIR)
 
 $(BIN_TESTRUNNER_DIR)/%_runner.o: | $(BIN_TESTRUNNER_DIR)
+	@echo "BUILDING $@"
+	@echo "USING $^"
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(TESTRUNNER_DEPENDS): $(TEST_SOURCES_RUNNER) | $(BIN_TESTRUNNER_DIR)
+$(TESTRUNNER_DEPENDS): $(BISECT_TEST_SRC) $(TEST_SOURCES_RUNNER) | $(BIN_TESTRUNNER_DIR)
 	$(CC) $(CFLAGS) -MM $^ | sed -e 's!^!$(BIN_TESTRUNNER_DIR)/!' >$@
-$(TESTCASE_DEPENDS): $(TEST_SOURCES) | $(BIN_TEST_DIR)
+$(TESTCASE_DEPENDS): $(BISECT_TEST_SRC) $(TEST_SOURCES) | $(BIN_TEST_DIR)
 	$(CC) $(CFLAGS) -MM $^ | sed -e 's!^!$(BIN_TEST_DIR)/!' >$@
 
 -include $(TESTCASE_DEPENDS)
@@ -167,7 +174,33 @@ $(SOURCE_TESTRUNNER_DIR):
 
 $(BIN_TEST_DIR):
 	mkdir -p $@
+
+############
+#GIT BISECT#
+############
+$(BISECT_TEST_SRC): $(BISECT_TEST_TEMPLATE)
+	if [ -e "$@" ]; then \
+		mkdir -p "$$(dirname $(SRC_TEST_DIR))"; \
+		cp "$<" "$@"; \
+	else \
+		touch "$@"; \
+	fi
+
+
+.PHONY: bisect
+bisect_make: $(BISECT_BINARY)
+
+.PHONY: bisect_run
+bisect_run: $(BISECT_BINARY)
+	$(BISECT_BINARY)
+
+
 endif
+
+
+###############
+#MISCELLANEOUS#
+###############
 
 .PHONY: clean
 clean:

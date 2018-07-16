@@ -13,6 +13,18 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 #0 = pass; 1 = soft fail; 2 = hard fail
 code=0
 
+
+
+POSSIBLY_MISSING_COPYRIGHT=$(git diff --cached --name-only --diff-filter=RACT --exit-code --quiet; echo $?) #Rename, Added, Copied
+
+if [ "$POSSIBLY_MISSING_COPYRIGHT" != "0" ]; then
+	echo "#NOTE: this commit seems to require updates to one or more file's copyright"
+	echo "headers (in particular, you have renamed, added, or copied at least one file)."
+	echo "Please verify that the headers of those files are correct before overriding"
+	echo "this warning."
+	code=1
+fi
+
 if [ "$branch" == "stable" ] || [ "$branch" == "develop" ]; then
 	echo "Building..."
 	VALID_BUILD=$(make -j all > /dev/null; echo $?)
@@ -43,5 +55,5 @@ if [ "$branch" == "stable" ] || [ "$branch" == "develop" ]; then
 fi
 
 [ "$code" = "1" ] &&
-	echo "(To override this rejection, use \"git commit --no-verify\")"
+	echo "(Use \"git commit --no-verify\" to override)"
 exit $code

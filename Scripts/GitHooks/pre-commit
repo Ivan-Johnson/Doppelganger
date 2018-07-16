@@ -1,5 +1,13 @@
 #!/bin/sh
 
+#Scripts/GitHooks/pre-commit
+#
+#Attempt builds and tests before committing to develop or stable
+#
+#Copyright(C) 2018, Ivan Tobias Johnson
+#
+#LICENSE: MIT License
+
 branch=$(git rev-parse --abbrev-ref HEAD)
 if [ "$branch" == "stable" ]; then
 	echo "In general, you shouldn't commit directly to the stable branch!"

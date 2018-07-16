@@ -1,5 +1,5 @@
 /*
- * Templates/bisectRunner.c
+ * Templates/bisect.c
  *
  * A template of a Unity test runner for performing git bisects
  *

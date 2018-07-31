@@ -50,7 +50,7 @@ ifeq ($(IS_TEST), no)
 #chance to free all memory. Unfortunately, casual trials suggest that we can't
 #have address checking without implicitly activating leak detection.
 	CFLAGS += -fsanitize=leak -fsanitize=address
-	LDLIBS += -lasan
+	LDLIBS := -lasan $(LDLIBS)
 endif
 endif
 ifeq ($(BUILD_TYPE), develop)
